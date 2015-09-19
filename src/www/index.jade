@@ -1,11 +1,34 @@
 doctype html
 html
-   head
-      title="leaflet-d3-sample"
-      meta(charset="utf-8")
-      link(rel='stylesheet', href='./css/app.css')
-      link(rel='stylesheet', href='./lib/leaflet-0.7.5/leaflet.css')
-   body#main
-      div#map
-      script(src='./js/bundle.js', charset='UTF-8')
-      script(src='./lib/leaflet-0.7.5/leaflet.js', charset='UTF-8')
+    head
+        title="leaflet-d3-sample"
+        meta(charset="utf-8")
+        link(rel='stylesheet', href='./css/app.css')
+        link(rel='stylesheet', href='./lib/leaflet-0.7.5/leaflet.css')
+        link(rel='stylesheet', href='./lib/material-design-lite/material.custom.min.css')
+        link(rel='stylesheet', href='https://fonts.googleapis.com/icon?family=Material+Icons')
+    body#main
+        div.mdl-layout.mdl-js-layout
+            header.mdl-layout__header.mdl-layout__header--scroll
+                div.mdl-layout__header-row
+                    span.mdl-layout-title leaflet & d3 sample
+                    div.mdl-layout-spacer
+                    nav.mdl-navigation
+                        a.mdl-navigation__link(href="") HOME
+                        a.mdl-navigation__link(href="/simple.html") SIMPLE
+                        a.mdl-navigation__link(href="/japan.html") JAPAN
+                        a.mdl-navigation__link(href="") Link
+            div.mdl-layout__drawer
+                span.mdl-layout-title Title
+                nav.mdl-navigation
+                    a.mdl-navigation__link(href="") HOME
+                    a.mdl-navigation__link(href="/simple.html") SIMPLE
+                    a.mdl-navigation__link(href="/japan.html") JAPAN
+                    a.mdl-navigation__link(href="") Link
+            main.mdl-layout__content
+                div.page-content
+                    div#map
+        script(src='./js/app.js', charset='UTF-8')
+        script(src='./lib/leaflet-0.7.5/leaflet.js', charset='UTF-8')
+        script(src='./lib/material-design-lite/material.min.js', charset='UTF-8')
+        script(src='./lib/material-design-lite/material.min.js', charset='UTF-8')

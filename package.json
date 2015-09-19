@@ -23,7 +23,10 @@
     "gulp-webpack": "^1.5.0",
     "gulp-webserver": "^0.9.1",
     "jquery": "^2.1.4",
+    "material-design-lite": "^1.0.4-2",
     "nib": "^1.1.0",
-    "require-dir": "^0.3.0"
+    "require-dir": "^0.3.0",
+    "vinyl-named": "^1.1.0",
+    "vue": "^0.12.14"
   }
 }

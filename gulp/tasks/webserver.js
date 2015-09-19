@@ -5,7 +5,7 @@ var config = require('../config');
 gulp.task('webserver',function(){
     gulp.src(config.dest)
         .pipe(webserver({
-            livereload: true,
+            livereload: false,
             port: 8001,
             fallback: 'index.html',
             open: true

@@ -1,16 +1,18 @@
 var $ = require('jquery');
 var d3 = require('d3');
 
-
 $(function(){
 
-    var map = L.map('map').setView([-41.2858, 174.7868], 13);
+    // Map位置の設定と表示とリンク付加
+    var map = L.map('map').setView([43.063968, 141.347899], 13);
     mapLink = '<a href="http://openstreetmap.org">OpenStreetMap</a>';
     L.tileLayer(
         'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '&copy; ' + mapLink + ' Contributors',
-            maxZoom: 18,
+            maxZoom: 18
         }).addTo(map);
+
+    console.log(map.getPanes().overlayPane);
 
     // Add an SVG element to Leaflet’s overlay pane
     var svg = d3.select(map.getPanes().overlayPane).append("svg"),
@@ -28,6 +30,10 @@ $(function(){
             .enter().append("path");
 
         map.on("viewreset", reset);
+
+        map.on('click', function(e) {
+            addCircle(e.latlng);
+        });
 
         reset();
 
@@ -58,6 +64,13 @@ $(function(){
             var point = map.latLngToLayerPoint(new L.LatLng(y, x));
             this.stream.point(point.x, point.y);
         }
+
+
+        function addCircle(latlng) {
+            console.log(latlng);
+            L.circle([latlng.lat, latlng.lng], 200).addTo(map);
+        }
+
 
     });
 });

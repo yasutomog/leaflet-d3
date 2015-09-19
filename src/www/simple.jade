@@ -1,0 +1,61 @@
+doctype html
+html
+    head
+        title="leaflet-d3-sample"
+        meta(charset="utf-8")
+        link(rel='stylesheet', href='./css/app.css')
+        link(rel='stylesheet', href='./lib/leaflet-0.7.5/leaflet.css')
+        link(rel='stylesheet', href='./lib/material-design-lite/material.custom.min.css')
+        link(rel='stylesheet', href='https://fonts.googleapis.com/icon?family=Material+Icons')
+    body#main
+        div.mdl-layout.mdl-js-layout
+            header.mdl-layout__header.mdl-layout__header--scroll
+                div.mdl-layout__header-row
+                    span.mdl-layout-title leaflet & d3 sample
+                    div.mdl-layout-spacer
+                    nav.mdl-navigation
+                        a.mdl-navigation__link(href="") HOME
+                        a.mdl-navigation__link(href="/simple.html") SIMPLE
+                        a.mdl-navigation__link(href="/japan.html") JAPAN
+                        a.mdl-navigation__link(href="") Link
+            div.mdl-layout__drawer
+                span.mdl-layout-title Title
+                nav.mdl-navigation
+                    a.mdl-navigation__link(href="") HOME
+                    a.mdl-navigation__link(href="/simple.html") SIMPLE
+                    a.mdl-navigation__link(href="/japan.html") JAPAN
+                    a.mdl-navigation__link(href="") Link
+            main.mdl-layout__content
+                div.page-content
+                    div#map.mdl-shadow--2dp(style="float: left; width: 60%; margin: 5px; 0 5px 5px")
+                    div#app(style="float: left; width: 39%;")
+                        table#setting.mdl-data-table.mdl-js-data-table.mdl-shadow--2dp
+                            thead
+                                tr
+                                    th.mdl-data-table__cell--non-numeric Material
+                                    th Quantity
+                                    th Unit price
+                                    th.mdl-data-table__cell--non-numeric value
+                                    th on/off
+                            tbody
+                                tr(v-repeat="mapInfo")
+                                    td.mdl-data-table__cell--non-numeric {{material}}
+                                    td {{quantity}}
+                                    td {{unitPrice}}
+                                    td
+                                        input.mdl-slider.mdl-js-slider(type='range', min='0' max='100' value='0' tabindex='0')
+                                    td
+                                        label.mdl-switch.mdl-js-switch.mdl-js-ripple-effect(for='switch-1{{$index}}')
+                                            input.mdl-switch__input(id='switch-1{{$index}}', type='checkbox' checked)
+                                            span.mdl-switch__label
+                            tfoot
+                                tr
+                                    td(colspan="6")
+                                        button.mdl-button.mdl-js-button.mdl-button--fab.mdl-button--mini-fab.mdl-button--colored(v-on="click: _onClick")
+                                            i.material-icons delete
+
+        script(src='./js/simple.js', charset='UTF-8')
+        script(src='./lib/leaflet-0.7.5/leaflet.js', charset='UTF-8')
+        script(src='http://d3js.org/topojson.v1.min.js', charset='UTF-8')
+        script(src='./lib/material-design-lite/material.min.js', charset='UTF-8')
+        script(src='./lib/material-design-lite/material.min.js', charset='UTF-8')

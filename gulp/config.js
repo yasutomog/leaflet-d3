@@ -21,15 +21,15 @@ module.exports = {
     js: {
         src: src + '/js/**',
         dest: dest + '/js',
-        uglify: true
+        uglify: false
     },
 
     // webpack
     webpack: {
-        entry: src + '/js/app.js',
-        output: {
-            filename: 'bundle.js'
-        },
+        entry: src + '/js/*.js',
+        //output: {
+        //    filename: '[name].bundle.js'
+        //},
         resolve: {
             extensions: ['', '.js']
         }
@@ -54,7 +54,8 @@ module.exports = {
             src + '/www/**/*.!(jade)'
         ],
         dest: dest,
-        libdir: ['lib/**/*.js', 'lib/**/*.css', 'lib/**/*.png']
+        libdir: ['lib/**/*.js', 'lib/**/*.css', 'lib/**/*.png'],
+        mdldir: ['node_modules/material-design-lite/*.min.js', 'node_modules/material-design-lite/*.min.css']
     },
 
     // watch

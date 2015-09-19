@@ -6,4 +6,6 @@ gulp.task('copy', function () {
         .pipe(gulp.dest(config.dest));
     gulp.src(config.libdir, { base: 'lib' })
         .pipe(gulp.dest(config.dest + '/lib'));
+    gulp.src(config.mdldir, { base: 'node_modules' })
+        .pipe(gulp.dest(config.dest + '/lib'));
 });

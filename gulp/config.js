@@ -1,3 +1,4 @@
+var webpack = require("webpack");
 var path = require('path');
 
 var dest = './dest'; // 出力先ディレクトリ
@@ -26,13 +27,29 @@ module.exports = {
 
     // webpack
     webpack: {
-        entry: src + '/js/*.js',
-        //output: {
-        //    filename: '[name].bundle.js'
-        //},
+        entry: {
+            app: './src/js/app.js',
+            simple: './src/js/simple.js',
+            japan: './src/js/japan.js'
+        },
+        output: {
+            filename: '[name].bundle.js'
+        },
         resolve: {
             extensions: ['', '.js']
-        }
+        },
+        plugins: [
+            new webpack.optimize.DedupePlugin(),
+            new webpack.ProvidePlugin({
+                jQuery: "jquery",
+                $: "jquery",
+                jquery: "jquery"
+            })
+        ],
+        loaders: [
+            { test: /jquery\.js$/, loader: 'expose?$' },
+            { test: /jquery\.js$/, loader: 'expose?jQuery' }
+        ]
     },
 
     // stylus

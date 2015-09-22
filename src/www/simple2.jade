@@ -26,41 +26,11 @@ html
                         li
                             a(href="/simple2.html") SIMPLE2
                                 i.material-icons.left directions
-        div.row
+        div#app.row
             div.col.s12.m12.l7
-                div#map.z-depth-1
+                app-map
             div.col.s12.m12.l5
-                div#app.z-depth-1
-                    table#setting.highlight
-                        thead
-                            tr
-                                th Material
-                                th Quantity
-                                th Unit price
-                                th value
-                                th on/off
-                        tbody
-                            tr(v-repeat="mapInfo")
-                                td {{material}}
-                                td {{quantity}}
-                                td {{unitPrice}}
-                                td
-                                    div.range-field
-                                        input(type="range", min="0" max="100", value="30")
-                                        span.thumb
-                                            span.value
-                                td
-                                    div.switch
-                                        label
-                                            input(type="checkbox")
-                                            span.lever
-                        tfoot
-                            tr
-                                td(colspan="6")
-                                    a.btn-floating.btn-large.waves-effect.waves-light.red.right
-                                        i.material-icons delete
-                                    a.btn-floating.btn-large.waves-effect.waves-light.right(v-on="click: _onClick")
-                                        i.material-icons add
+                list(mapInfos="{{mapInfos}}", hoge="{{hoge}}", maps="{{maps}}")
         script(src='./lib/leaflet-0.7.5/leaflet.js', charset='UTF-8')
         script(src='./js/simple.bundle.js', charset='UTF-8')
         script(src='http://d3js.org/topojson.v1.min.js', charset='UTF-8')

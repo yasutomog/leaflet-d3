@@ -45,7 +45,9 @@ var app = new Vue({
         'change:display': '_changeDisplay',
         'change:range': '_changeRange',
         'change:type': '_onChangeType',
-        'click:delbtn': '_removeLocation'
+        'click:delbtn': '_removeLocation',
+        'mouseover:listrow': '_onMouseoverListRow',
+        'mouseout:listrow': '_onMouseoutListRow'
     },
     methods: {
 
@@ -104,6 +106,14 @@ var app = new Vue({
             });
 
             this.$broadcast('click:delbtn', delLocs);
+        },
+
+        _onMouseoverListRow: function(location) {
+            this.$broadcast('mouseover:listrow', location);
+        },
+
+        _onMouseoutListRow: function(location) {
+            this.$broadcast('mouseout:listrow', location);
         }
 
     },
@@ -147,7 +157,9 @@ var app = new Vue({
                 'change:display': '_changeDisplay',
                 'change:range': '_changeRange',
                 'change:type': '_changeType',
-                'click:delbtn': '_removeCircles'
+                'click:delbtn': '_removeCircles',
+                'mouseover:listrow': '_onMouseoverListRow',
+                'mouseout:listrow': '_onMouseoutListRow'
             },
             methods: {
 
@@ -223,7 +235,7 @@ var app = new Vue({
                             } else if (location.type === "2") {
                                 this.circles[i].setStyle({color: '#ff1744'});
                             } else {
-                                this.circles[i].setStyle({color: '#00e676'});
+                                this.circles[i].setStyle({color: '#d500f9'});
                             }
 
                         }
@@ -251,8 +263,33 @@ var app = new Vue({
 
                     }
 
+                },
 
+                _onMouseoverListRow: function(location) {
 
+                    for (var i = 0, len = this.circles.length; i < len; i++) {
+
+                        if (location.uid === this.circles[i].options.uid) {
+
+                            this.circles[i].setStyle({opacity: 0.9});
+
+                        }
+
+                    }
+
+                },
+
+                _onMouseoutListRow: function(location) {
+
+                    for (var i = 0, len = this.circles.length; i < len; i++) {
+
+                        if (location.uid === this.circles[i].options.uid) {
+
+                            this.circles[i].setStyle({opacity: 0.5});
+
+                        }
+
+                    }
 
                 }
 
@@ -291,6 +328,14 @@ var app = new Vue({
 
                 _onClickDeleteBtn: function() {
                     this.$dispatch('click:delbtn');
+                },
+
+                _onMouseoverRow: function(location) {
+                    this.$dispatch('mouseover:listrow', location);
+                },
+
+                _onMouseoutRow: function(location) {
+                    this.$dispatch('mouseout:listrow', location);
                 }
 
             },
@@ -307,7 +352,7 @@ var app = new Vue({
                         '</tr>' +
                     '</thead>' +
                     '<tbody>' +
-                        '<tr v-repeat="locations">' +
+                        '<tr v-repeat="locations" v-on="mouseover: _onMouseoverRow(this), mouseout: _onMouseoutRow(this)">' +
                             '<td><p><input type="checkbox" id="{{uid}}" v-model="delflg" /><label for="{{uid}}"></label></p></td>' +
                             '<td><select class="browser-default" v-model="type" v-on="change: _onChangeType(this)"><option value="1">飲食店</option><option value="2">病院</option><option value="3">公園</option></select></td>' +
                             '<td>{{address}}</td>' +

@@ -6,43 +6,81 @@ var Vue = require('vue');
 var app = new Vue({
     el: '#app',
     data: {
-        maps: [{
-            material: 'Acrylic (Transparent)',
-            quantity: 25,
-            unitPrice: '$2.90',
-            value: 100,
-            flg: 1
+        locations: [{
+            lat: 43.05948172752397,
+            lng: 141.2884283065796,
+            address: '北海道札幌市西区山の手１条１３丁目５−１７',
+            range: 100,
+            uid: 0,
+            display: true
         }, {
-            material: 'Acrylic (Transparent)2',
-            quantity: 252,
-            unitPrice: '$2.902',
-            value: 1002,
-            flg: 0
+            lat: 43.06913858232447,
+            lng: 141.34576320648193,
+            address: '北海道札幌市北区北７条西６丁目２−８',
+            range: 200,
+            uid: 1,
+            display: true
         }, {
-            material: 'Acrylic (Transparent)3',
-            quantity: 252,
-            unitPrice: '$2.902',
-            value: 1002,
-            flg: 0
-        }]
+            lat: 43.043927231600534,
+            lng: 141.4209508895874,
+            address: '北海道札幌市白石区本通（北）９丁目北４−８',
+            range: 250,
+            uid: 2,
+            display: true
+        }],
+        maxuid: 2
+    },
+    ready: function() {
+        this.$broadcast('root:ready', this.locations);
     },
     events: {
-        'add:map': '_onAddMapInfo'
+        'add:location': '_addLocation',
+        'add:list': '_addLocation',
+        'change:display': '_changeDisplay',
+        'change:range': '_changeRange'
     },
     methods: {
-        _onAddMapInfo: function(e) {
-            this.maps.push({
-                material: 'Acrylic (Transparent)4',
-                quantity: 252,
-                unitPrice: '$2.902',
-                value: 1002,
-                flg: 0
+        _addLocation: function(latlng, uid) {
+            var me = this;
+            this._useGoogleApi(latlng).done(function(data) {
+                var address = data.results[0].formatted_address.split(',')[1].split(' ')[2];
+                me.locations.push({
+                    lat: latlng.lat,
+                    lng: latlng.lng,
+                    address: address,
+                    range: 200,
+                    uid: uid,
+                    display: true
+                });
             });
         },
-        removeMapInfo: function(e) {
+        _removeLocation: function(e) {
+        },
+        _useGoogleApi: function(latlng) {
+            var defer = $.Deferred();
+            $.ajax({
+                url: "http://maps.google.com/maps/api/geocode/json",
+                data: {
+                    latlng: latlng.lat + ',' + latlng.lng,
+                    sensor: false
+                },
+                dataType: 'json',
+                success: defer.resolve,
+                error: defer.reject
+            });
+            return defer.promise();
+        },
+
+        _changeDisplay: function(location) {
+            this.$broadcast('change:display', location);
+        },
+        _changeRange: function(location) {
+            this.$broadcast('change:range', location);
         }
     },
     components: {
+        props: ['locations'],
+        inherit: true,
         map: {
             replace: true,
             map: '',
@@ -68,74 +106,122 @@ var app = new Vue({
                     g = svg.append("g").attr("class", "leaflet-zoom-hide");
 
                 this.map.on('click', function(e) {
-                    console.log(e);
                     var latlng = e.latlng;
-                    this.addCircle(latlng);
+                    this._onClickMap(latlng);
                 }, this);
 
                 $(".button-collapse").sideNav();
 
             },
+            events: {
+                'root:ready': '_addCircles',
+                'change:display': '_changeDisplay',
+                'change:range': '_changeRange'
+            },
             methods: {
 
-                addCircle: function(latlng) {
+                _onClickMap: function(latlng) {
+                    app.maxuid = app.maxuid + 1;
+                    this._addCircle(latlng, app.maxuid);
+                    this.$dispatch('add:location', latlng, app.maxuid);
+                },
 
-                    var popup = L.popup()
-                        .setLatLng(latlng)
-                        .setContent('<div class="row">' +
-                        '<form class="col s12"><div>' +
-                        '<div class="input-field col s12"><input id="last_name" type="text" class="validate" /><label for="last_name">Last Name</label></div>' +
-                        '</div></form>' +
-                        '</div>')
-                        .openOn(this.map);
-
-                    console.log(latlng.lat);
-                    console.log(latlng.lng);
-
-                    var circle = L.circle([latlng.lat, latlng.lng], 200).addTo(this.map);
+                _addCircle: function(latlng, uid) {
+                    var opt = {
+                            uid: uid
+                        },
+                        circle = L.circle([latlng.lat, latlng.lng], 200, opt);
+                    this.map.addControl(circle);
                     this.circles.push(circle);
                     this.selectedLatlngs.push(latlng);
                 },
 
-                addPolyline: function(latlng) {
-                    var polyline = L.polyline(selectedLatlngs, {color: 'red'}).addTo(this.map);
+                _addCircles: function(locations) {
+
+                    for (var i = 0, len = locations.length; i < len; i++) {
+                        var location = locations[i],
+                            latlng = {
+                                lat: location.lat,
+                                lng: location.lng
+                            };
+                        this._addCircle(latlng, location.uid);
+                    }
+
+                },
+
+                _changeDisplay: function(location) {
+
+                    for (var i = 0, len = this.circles.length; i < len; i++) {
+
+                        if (location.uid === this.circles[i].options.uid) {
+
+                            if (location.display) {
+                                $(this.circles[i]._container).show();
+                            } else {
+                                $(this.circles[i]._container).hide();
+                            }
+
+                        }
+
+                    }
+
+                },
+
+                _changeRange: function(location) {
+
+                    for (var i = 0, len = this.circles.length; i < len; i++) {
+
+                        if (location.uid === this.circles[i].options.uid) {
+
+                            this.circles[i].setRadius(location.range);
+
+                        }
+
+                    }
                 }
+
             },
             template:
                 '<div id="map" class="z-depth-1"></div>'
 
         },
+
         list: {
-            props: ['maps'],
+            props: ['locations'],
             methods: {
-                _onClick: function() {
-                    this.$dispatch('add:map');
+                _onClickAddBtn: function() {
+                    this.$dispatch('add:list');
+                },
+                _onChangeRange: function(location) {
+                    this.$dispatch('change:range', location);
+                },
+                _onChangeDispay: function(location) {
+                    this.$dispatch('change:display', location);
                 }
+
             },
             template:
             '<div id="list" class="z-depth-1">' +
                 '<table id="setting" class="highlight">' +
                     '<thead>' +
                         '<tr>' +
-                            '<th>Material</th>' +
-                            '<th>Quantity</th>' +
-                            '<th>Unit price</th>' +
-                            '<th>value</th>' +
-                            '<th>on/off</th>' +
+                            '<th>削除</th>' +
+                            '<th>住所</th>' +
+                            '<th>範囲</th>' +
+                            '<th>表示</th>' +
                         '</tr>' +
                     '</thead>' +
                     '<tbody>' +
-                        '<tr v-repeat="maps">' +
-                            '<td><p><input type="checkbox" id="{{$index}}" /><label for="{{$index}}"></label></p></td>' +
-                            '<td>{{quantity}}</td>' +
-                            '<td>{{unitPrice}}</td>' +
-                            '<td><div class="range-field"><input type="range" min="0" max="100" value="30" /><span class="thumb"><span class="value"></span></span></div></td>' +
-                            '<td><div class="switch"><label><input type="checkbox" /><span class="lever"></span></label></div></td>' +
+                        '<tr v-repeat="locations">' +
+                            '<td><p><input type="checkbox" id="{{uid}}" /><label for="{{uid}}"></label></p></td>' +
+                            '<td>{{address}}</td>' +
+                            '<td><div class="range-field"><input type="range" min="50" max="400" v-model="range" v-on="change: _onChangeRange(this)" /><span class="thumb"><span class="value"></span></span></div></td>' +
+                            '<td><div class="switch"><label><input type="checkbox" v-on="change: _onChangeDispay(this)" v-model="display" /><span class="lever"></span></label></div></td>' +
                         '</tr>' +
                     '</tbody>' +
                     '<tfoot>' +
                         '<tr>' +
-                            '<td colspan="6"><a class="btn-floating btn-large waves-effect waves-light red right"><i class="material-icons">delete</i></a><a class="btn-floating btn-large waves-effect waves-light right" v-on="click: _onClick"><i class="material-icons">add</i></a></td>' +
+                            '<td colspan="6"><a class="btn-floating btn-large waves-effect waves-light red right"><i class="material-icons">delete</i></a><a class="btn-floating btn-large waves-effect waves-light right" v-on="click: _onClickAddBtn"><i class="material-icons">add</i></a></td>' +
                         '</tr>' +
                     '</tfoot>' +
                 '</table>' +

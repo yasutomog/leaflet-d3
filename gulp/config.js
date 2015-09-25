@@ -29,7 +29,7 @@ module.exports = {
     webpack: {
         entry: {
             app: './src/js/app.js',
-            simple: './src/js/simple.js',
+            bi: './src/js/bi.js',
             japan: './src/js/japan.js'
         },
         output: {

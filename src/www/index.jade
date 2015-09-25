@@ -5,30 +5,41 @@ html
         meta(charset="utf-8")
         link(rel='stylesheet', href='./css/app.css')
         link(rel='stylesheet', href='./lib/leaflet-0.7.5/leaflet.css')
-        link(rel='stylesheet', href='./lib/material-design-lite/material.custom.min.css')
-        link(rel='stylesheet', href='https://fonts.googleapis.com/icon?family=Material+Icons')
-    body#main
-        div.mdl-layout.mdl-js-layout
-            header.mdl-layout__header.mdl-layout__header--scroll
-                div.mdl-layout__header-row
-                    span.mdl-layout-title leaflet & d3 sample
-                    div.mdl-layout-spacer
-                    nav.mdl-navigation
-                        a.mdl-navigation__link(href="") HOME
-                        a.mdl-navigation__link(href="/simple.html") SIMPLE
-                        a.mdl-navigation__link(href="/japan.html") JAPAN
-                        a.mdl-navigation__link(href="") Link
-            div.mdl-layout__drawer
-                span.mdl-layout-title Title
-                nav.mdl-navigation
-                    a.mdl-navigation__link(href="") HOME
-                    a.mdl-navigation__link(href="/simple.html") SIMPLE
-                    a.mdl-navigation__link(href="/japan.html") JAPAN
-                    a.mdl-navigation__link(href="") Link
-            main.mdl-layout__content
-                div.page-content
-                    div#map
-        script(src='./js/app.js', charset='UTF-8')
+        link(rel='stylesheet', href='http://fonts.googleapis.com/icon?family=Material+Icons')
+        link(rel='stylesheet', href='https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.1/css/materialize.min.css', media="screen,projection")
+        meta(name="viewport" content="width=device-width, initial-scale=1.0")
+    body#leaflet
+        nav
+            div.nav-wrapper
+                a.brand-logo(href="#") OSGeo x HTML5fun
+                a.button-collapse(href="#", data-activates="mobile-demo")
+                    i.material-icons menu
+                ul.right.hide-on-med-and-down
+                    li
+                        a(href="") leaflet
+                            i.material-icons.left place
+                    li
+                        a(href="/japan.html") JAPAN
+                            i.material-icons.left map
+                    li
+                        a(href="/simple2.html") d3
+                            i.material-icons.left directions
+                ul#mobile-demo.side-nav
+                    li
+                        a(href="") leaflet
+                            i.material-icons.left search
+                    li
+                        a(href="/japan.html") JAPAN
+                            i.material-icons.left map
+                    li
+                        a(href="/simple2.html") d3
+                            i.material-icons.left directions
+        div#app.row
+            div.col.s12.m12.l7
+                map
+            div.col.s12.m12.l5
+                list(locations="{{@ locations}}")
         script(src='./lib/leaflet-0.7.5/leaflet.js', charset='UTF-8')
-        script(src='./lib/material-design-lite/material.min.js', charset='UTF-8')
-        script(src='./lib/material-design-lite/material.min.js', charset='UTF-8')
+        script(src='./js/app.bundle.js', charset='UTF-8')
+        script(src='http://d3js.org/topojson.v1.min.js', charset='UTF-8')
+                                         

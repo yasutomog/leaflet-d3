@@ -1,11 +1,10 @@
 fonts = helvetica, arial, sans-serif
 
-html
-  height: 100%;
-
-#leaflet
+html, body
   height: 100%;
   overflow-y: hidden;
+
+#leaflet
   #app
     height: 100%;
     & > div
@@ -22,16 +21,24 @@ html
     overflow-y: auto;
 
 #bi
+  #app
+    height: 100%;
+    overflow-y: auto;
+  #main
+    height: 60%;
+    & > div
+      height: 100%;
   #map
     width: 100%;
-    height: 70%;
+    height: 100%;
     margin: 5px 0;
-  #app
-    height: 70%;
-  #app > div
-    height: 70%;
+  #setting
+    margin: 5px 0;
+  #list
+    margin: 5px 0;
+    height: 100%;
     overflow-y: auto;
   #graph
-    height: 30%;
-  #setting
-    margin-top: 5px;
+    height: 50%;
+  #graph1
+    height: 100%;

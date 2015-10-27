@@ -10,7 +10,7 @@ var app = new Vue({
             lat: 43.05948172752397,
             lng: 141.2884283065796,
             address: '北海道札幌市西区山の手１条１３丁目５−１７',
-            range: 100,
+            range: 50,
             uid: 0,
             display: true,
             type: "1",
@@ -22,7 +22,7 @@ var app = new Vue({
             range: 200,
             uid: 1,
             display: true,
-            type: "1",
+            type: "2",
             delflg: false
         }, {
             lat: 43.043927231600534,
@@ -31,7 +31,7 @@ var app = new Vue({
             range: 250,
             uid: 2,
             display: true,
-            type: "1",
+            type: "3",
             delflg: false
         }],
         maxuid: 2
@@ -41,7 +41,6 @@ var app = new Vue({
     },
     events: {
         'add:location': '_addLocation',
-        'add:list': '_addLocation',
         'change:display': '_changeDisplay',
         'change:range': '_changeRange',
         'change:type': '_onChangeType',
@@ -66,6 +65,9 @@ var app = new Vue({
                     delflg: false
                 });
             });
+
+            this.$broadcast('add:location', me.locations);
+
         },
 
         _useGoogleApi: function(latlng) {
@@ -114,13 +116,23 @@ var app = new Vue({
 
         _onMouseoutListRow: function(location) {
             this.$broadcast('mouseout:listrow', location);
+        },
+
+        _choiceColor: function(type) {
+            if (type === "2") {
+                return '#ff1744';
+            } else if (type === "3") {
+                return '#d500f9';
+            } else {
+                return '#2979ff';
+            }
         }
 
     },
     components: {
-        props: ['locations'],
-        inherit: true,
         map: {
+            props: ['locations'],
+            inherit: true,
             replace: true,
             map: '',
             data: function() {
@@ -164,20 +176,34 @@ var app = new Vue({
             methods: {
 
                 _onClickMap: function(latlng) {
+
                     app.maxuid = app.maxuid + 1;
                     this._addCircle(latlng, app.maxuid);
                     this.$dispatch('add:location', latlng, app.maxuid);
+
                 },
 
-                _addCircle: function(latlng, uid) {
-                    var opt = {
+                _addMarker: function(latlng) {
+
+                    L.marker([latlng.lat, latlng.lng]).addTo(this.map);
+
+                },
+
+                _addCircle: function(latlng, uid, type, range) {
+
+                    var color = this._choiceColor(type),
+                        opt = {
                             uid: uid,
-                            color: '#2979ff'
+                            color: color
                         },
-                        circle = L.circle([latlng.lat, latlng.lng], 200, opt);
+                        r = range === undefined ? 200 : range,
+                        circle = L.circle([latlng.lat, latlng.lng], r, opt);
                     this.map.addControl(circle);
                     this.circles.push(circle);
                     this.selectedLatlngs.push(latlng);
+
+                    this._addMarker(latlng);
+
                 },
 
                 _addCircles: function(locations) {
@@ -188,7 +214,7 @@ var app = new Vue({
                                 lat: location.lat,
                                 lng: location.lng
                             };
-                        this._addCircle(latlng, location.uid);
+                        this._addCircle(latlng, location.uid, location.type, location.range);
                     }
 
                 },
@@ -215,13 +241,18 @@ var app = new Vue({
 
                     for (var i = 0, len = this.circles.length; i < len; i++) {
 
+                        console.log("this.circles[i].options.uid");
+                        console.log(this.circles[i].options.uid);
+
                         if (location.uid === this.circles[i].options.uid) {
 
+                            console.log("setRadius");
                             this.circles[i].setRadius(location.range);
 
                         }
 
                     }
+
                 },
 
                 _changeType: function(location) {
@@ -230,17 +261,14 @@ var app = new Vue({
 
                         if (location.uid === this.circles[i].options.uid) {
 
-                            if (location.type === "1") {
-                                this.circles[i].setStyle({color: '#2979ff'});
-                            } else if (location.type === "2") {
-                                this.circles[i].setStyle({color: '#ff1744'});
-                            } else {
-                                this.circles[i].setStyle({color: '#d500f9'});
-                            }
+                            var color = this._choiceColor(location.type);
+                            this.circles[i].setStyle({color: color});
 
                         }
 
                     }
+
+                    //this.$dispatch('change:type', location);
 
                 },
 
@@ -250,7 +278,7 @@ var app = new Vue({
 
                         var delUid = delLocs[i].uid;
 
-                        for(var j = 0, clen = this.circles.length; j < clen; j++) {
+                        for (var j = 0, clen = this.circles.length; j < clen; j++) {
 
                             if (delUid === this.circles[j].options.uid) {
 
@@ -305,10 +333,6 @@ var app = new Vue({
                 'root:ready': '_onReady'
             },
             methods: {
-
-                _onClickAddBtn: function() {
-                    this.$dispatch('add:list');
-                },
 
                 _onChangeRange: function(location) {
                     this.$dispatch('change:range', location);
@@ -367,6 +391,256 @@ var app = new Vue({
             '</tfoot>' +
             '</table>' +
             '</div>'
+        },
+
+        graph1: {
+            props: ['locations'],
+            pieChart: {},
+            pie: {},
+            arc: {},
+            events: {
+                'root:ready': '_onReady',
+                'add:location': '_updatePieChart',
+                'change:locations': '_updatePieChart'
+            },
+            methods: {
+
+                _onReady: function(locations) {
+                    this._dashboard('#dashboard', locations);
+                },
+
+                _dashboard: function(id, locations) {
+
+                    var me = this,
+                        tr = me._createTotalRange(locations);
+
+                    me._pieChart(tr, id);
+
+                },
+
+                _pieChart: function(pD, id) {
+
+                    var me = this,
+                        pieDim = {
+                            w: 200,
+                            h: 200
+                        };
+                    pieDim.r = Math.min(pieDim.w, pieDim.h) / 2;
+
+                    me.pieChart = d3.select(id).append("svg")
+                        .attr("width", pieDim.w).attr("height", pieDim.h).append("g")
+                        .attr("transform", "translate("+pieDim.w/2+","+pieDim.h/2+")");
+
+                    // create function to draw the arcs of the pie slices.
+                    me.arc = d3.svg.arc().outerRadius(pieDim.r - 10).innerRadius(0);
+
+                    // create a function to compute the pie slice angles.
+                    me.pie = d3.layout.pie().sort(null).value(function(d) {
+                        return d.freq;
+                    });
+
+                    // Draw the pie slices.
+                    me.pieChart.selectAll("path").data(me.pie(pD)).enter().append("path").attr("d", me.arc)
+                        .each(function(d) {
+                            this._current = d;
+                        })
+                        .style("fill", function(d) {
+                            return me.segColor(d.data.type);
+                        });
+                    //.on("mouseover",mouseover).on("mouseout",mouseout);
+                    //
+                    //// Utility function to be called on mouseover a pie slice.
+                    //function mouseover(d){
+                    //    // call the update function of histogram with new data.
+                    //    hG.update(fData.map(function(v){
+                    //        return [v.State,v.freq[d.data.type]];}),this.segColor(d.data.type));
+                    //}
+                    ////Utility function to be called on mouseout a pie slice.
+                    //function mouseout(d){
+                    //    // call the update function of histogram with all data.
+                    //    hG.update(fData.map(function(v){
+                    //        return [v.State,v.total];}), barColor);
+                    //}
+                    ////Animating the pie-slice requiring a custom function which specifies
+                    ////how the intermediate paths should be drawn.
+                    //function arcTween(a) {
+                    //    var i = d3.interpolate(this._current, a);
+                    //    this._current = i(0);
+                    //    return function(t) { return arc(i(t));    };
+                    //}
+
+                },
+
+                segColor: function(c) {
+
+                    return {
+                        1:"#80d8ff", 2:"#ff8a80",3:"#b388ff"
+                    }[c];
+
+                },
+
+                _updatePieChart: function(locations) {
+
+                    var me = this,
+                        tr = me._createTotalRange(locations);
+
+                    me.pieChart.selectAll("path").data(me.pie(tr)).transition().duration(500)
+                        .attrTween("d", function(a){
+                            var i = d3.interpolate(this._current, a);
+                            this._current = i(0);
+                            return function(t) {
+                                return me.arc(i(t));
+                            };
+                        });
+
+
+                },
+
+                _createTotalRange: function(locations) {
+
+                    var tr = ["1","2","3"].map(function(d){
+                        return {
+                            type: d,
+                            freq: d3.sum(locations.map(function(t) {
+                                if (t.type === d) {
+                                    return t.range;
+                                }
+                            }))
+                        };
+                    });
+                    return tr;
+
+                }
+
+
+            },
+            template:
+            '<div id="dashboard"></div>'
+        },
+
+        graph2: {
+            props: ['locations'],
+            pieChart: {},
+            pie: {},
+            arc: {},
+            events: {
+                'root:ready': '_onReady',
+                'add:location': '_updatePieChart',
+                'change:locations': '_updatePieChart'
+            },
+            methods: {
+
+                _onReady: function(locations) {
+                    this._dashboard('#dashboard', locations);
+                },
+
+                _dashboard: function(id, locations) {
+
+                    var me = this,
+                        tr = me._createTotalRange(locations);
+
+                    me._pieChart(tr, id);
+
+                },
+
+                _pieChart: function(pD, id) {
+
+                    var me = this,
+                        pieDim = {
+                            w: 200,
+                            h: 200
+                        };
+                    pieDim.r = Math.min(pieDim.w, pieDim.h) / 2;
+
+                    me.pieChart = d3.select(id).append("svg")
+                        .attr("width", pieDim.w).attr("height", pieDim.h).append("g")
+                        .attr("transform", "translate("+pieDim.w/2+","+pieDim.h/2+")");
+
+                    // create function to draw the arcs of the pie slices.
+                    me.arc = d3.svg.arc().outerRadius(pieDim.r - 10).innerRadius(0);
+
+                    // create a function to compute the pie slice angles.
+                    me.pie = d3.layout.pie().sort(null).value(function(d) {
+                        return d.freq;
+                    });
+
+                    // Draw the pie slices.
+                    me.pieChart.selectAll("path").data(me.pie(pD)).enter().append("path").attr("d", me.arc)
+                        .each(function(d) {
+                            this._current = d;
+                        })
+                        .style("fill", function(d) {
+                            return me.segColor(d.data.type);
+                        });
+                    //.on("mouseover",mouseover).on("mouseout",mouseout);
+                    //
+                    //// Utility function to be called on mouseover a pie slice.
+                    //function mouseover(d){
+                    //    // call the update function of histogram with new data.
+                    //    hG.update(fData.map(function(v){
+                    //        return [v.State,v.freq[d.data.type]];}),this.segColor(d.data.type));
+                    //}
+                    ////Utility function to be called on mouseout a pie slice.
+                    //function mouseout(d){
+                    //    // call the update function of histogram with all data.
+                    //    hG.update(fData.map(function(v){
+                    //        return [v.State,v.total];}), barColor);
+                    //}
+                    ////Animating the pie-slice requiring a custom function which specifies
+                    ////how the intermediate paths should be drawn.
+                    //function arcTween(a) {
+                    //    var i = d3.interpolate(this._current, a);
+                    //    this._current = i(0);
+                    //    return function(t) { return arc(i(t));    };
+                    //}
+
+                },
+
+                segColor: function(c) {
+
+                    return {
+                        1:"#80d8ff", 2:"#ff8a80",3:"#b388ff"
+                    }[c];
+
+                },
+
+                _updatePieChart: function(locations) {
+
+                    var me = this,
+                        tr = me._createTotalRange(locations);
+
+                    me.pieChart.selectAll("path").data(me.pie(tr)).transition().duration(500)
+                        .attrTween("d", function(a){
+                            var i = d3.interpolate(this._current, a);
+                            this._current = i(0);
+                            return function(t) {
+                                return me.arc(i(t));
+                            };
+                        });
+
+
+                },
+
+                _createTotalRange: function(locations) {
+
+                    var tr = ["1","2","3"].map(function(d){
+                        return {
+                            type: d,
+                            freq: d3.sum(locations.map(function(t) {
+                                if (t.type === d) {
+                                    return t.range;
+                                }
+                            }))
+                        };
+                    });
+                    return tr;
+
+                }
+
+
+            },
+            template:
+                '<div id="dashboard2"></div>'
         }
     }
 });

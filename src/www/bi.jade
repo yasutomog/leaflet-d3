@@ -9,41 +9,47 @@ html
       link(rel='stylesheet', href='https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.1/css/materialize.min.css', media="screen,projection")
       meta(name="viewport" content="width=device-width, initial-scale=1.0")
    body#bi
-      nav
-         div.nav-wrapper
-            a.brand-logo(href="#") OSGeo x HTML5fun
-            a.button-collapse(href="#", data-activates="mobile-demo")
-               i.material-icons menu
-            ul.right.hide-on-med-and-down
-               li
-                  a(href="") leaflet
-                     i.material-icons.left place
-               li
-                  a(href="/japan.html") JAPAN
-                     i.material-icons.left map
-               li
-                  a(href="/simple2.html") d3
-                     i.material-icons.left directions
-            ul#mobile-demo.side-nav
-               li
-                  a(href="") leaflet
-                     i.material-icons.left search
-               li
-                  a(href="/japan.html") JAPAN
-                     i.material-icons.left map
-               li
-                  a(href="/simple2.html") d3
-                     i.material-icons.left directions
+      div.navbar-fixed
+         nav
+            div.nav-wrapper
+               a.brand-logo(href="#") OSGeo x HTML5fun
+               a.button-collapse(href="#", data-activates="mobile-demo")
+                  i.material-icons menu
+               ul.right.hide-on-med-and-down
+                  li
+                     a(href="") leaflet
+                        i.material-icons.left place
+                  li
+                     a(href="/japan.html") JAPAN
+                        i.material-icons.left map
+                  li
+                     a(href="/bi.html") d3
+                        i.material-icons.left directions
+               ul#mobile-demo.side-nav
+                  li
+                     a(href="") leaflet
+                        i.material-icons.left search
+                  li
+                     a(href="/japan.html") JAPAN
+                        i.material-icons.left map
+                  li
+                     a(href="/bi.html") d3
+                        i.material-icons.left directions
       div#app.row
-         div.col.s12.m12.l7
-            map
-         div.col.s12.m12.l5
-            list(locations="{{@ locations}}")
-      div#graph.row
-         div.col.s6.m6.l3 abc
-         div.col.s6.m6.l3 abc
-         div.col.s6.m6.l3 abc
-         div.col.s6.m6.l3 abc
+         div#main.row
+            div.col.s12.m12.l7
+               map
+            div.col.s12.m12.l5
+               list(locations="{{@ locations}}")
+         div#graph.row
+            div.col.s6.m6.l3
+               div.card-panel
+                  graph1
+                  span The total value of each type.
+            div.col.s6.m6.l3
+               div.card-panel
+                  graph2
+                  span The total value of each type2.
       script(src='./lib/leaflet-0.7.5/leaflet.js', charset='UTF-8')
       script(src='./js/bi.bundle.js', charset='UTF-8')
       script(src='http://d3js.org/topojson.v1.min.js', charset='UTF-8')

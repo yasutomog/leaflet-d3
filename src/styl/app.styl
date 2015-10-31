@@ -1,44 +1,80 @@
 fonts = helvetica, arial, sans-serif
 
 html, body
-  height: 100%;
-  overflow-y: hidden;
+  height 100%
+  overflow-y hidden
 
 #leaflet
   #app
-    height: 100%;
+    height 100%
     & > div
-      height: 100%;
+      height 100%
   #map
-    width: 100%;
-    height: 100%;
-    margin: 5px 0;
+    width 100%
+    height 100%
+    margin 5px 0
   #setting
-    margin: 5px 0;
+    margin 5px 0
   #list
-    margin: 5px 0;
-    height: 88%;
-    overflow-y: auto;
+    margin 5px 0
+    height 88%
+    overflow-y auto
 
 #bi
   #app
-    height: 100%;
-    overflow-y: auto;
+    height 100%
+    overflow-y auto
   #main
-    height: 60%;
+    height 60%
     & > div
-      height: 100%;
+      height 100%
+    margin-bottom 10px
   #map
-    width: 100%;
-    height: 100%;
-    margin: 5px 0;
+    width 100%
+    height 100%
+    margin 5px 0
   #setting
-    margin: 5px 0;
+    margin 5px 0
   #list
-    margin: 5px 0;
-    height: 100%;
-    overflow-y: auto;
+    margin 5px 0
+    height 100%
+    overflow-y auto
   #graph
-    height: 50%;
+    height 50%
   #graph1
-    height: 100%;
+    height 100%
+  #dashboard1
+    margin 0 auto
+    width 250px
+  #dashboard2
+    .bar1
+      fill #80d8ff
+    .bar2
+      fill #ff8a80
+    .bar3
+      fill #b388ff
+    .axis
+      font 10px sans-serif
+    .axis path,
+    .axis line
+      fill none
+      stroke #000
+      shape-rendering crispEdges
+    .x.axis path
+      display none
+  #dashboard3
+    font 10px sans-serif
+    .line
+      fill none
+      stroke steelblue
+      stroke-width 1.5px
+    .axis path
+      opacity 0
+      stroke #000
+      stroke-width 1
+      shape-rendering crispEdges
+
+    .axis line
+      stroke #000
+      stroke-width 1
+      shape-rendering crispEdges

@@ -62,7 +62,7 @@ module.exports = {
         autoprefixer: {
             browsers: ['last 2 versions']
         },
-        minify: false
+        minify: true
     },
 
     // copy

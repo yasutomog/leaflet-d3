@@ -33,8 +33,89 @@ var app = new Vue({
             display: true,
             type: "3",
             delflg: false
+        }, {
+            lat: 43.05822747893088,
+            lng: 141.3679075241089,
+            address: '北海道札幌市西区山の手１条１３丁目５−１７',
+            range: 50,
+            uid: 3,
+            display: true,
+            type: "1",
+            delflg: false
+        }, {
+            lat: 43.04530722536699,
+            lng: 141.37614727020264,
+            address: '北海道札幌市北区北７条西６丁目２−８',
+            range: 200,
+            uid: 4,
+            display: true,
+            type: "2",
+            delflg: false
+        }, {
+            lat: 43.08757017184191,
+            lng: 141.35554790496823,
+            address: '北海道札幌市白石区本通（北）９丁目北４−８',
+            range: 250,
+            uid: 5,
+            display: true,
+            type: "3",
+            delflg: false
+        }, {
+            lat: 43.08945063454082,
+            lng: 141.29563808441162,
+            address: '北海道札幌市西区山の手１条１３丁目５−１７',
+            range: 50,
+            uid: 6,
+            display: true,
+            type: "1",
+            delflg: false
+        }, {
+            lat: 43.063745980830284,
+            lng: 141.3136625289917,
+            address: '北海道札幌市北区北７条西６丁目２−８',
+            range: 200,
+            uid: 7,
+            display: true,
+            type: "2",
+            delflg: false
+        }, {
+            lat: 43.0311294472567,
+            lng: 141.32087230682373,
+            address: '北海道札幌市白石区本通（北）９丁目北４−８',
+            range: 250,
+            uid: 8,
+            display: true,
+            type: "3",
+            delflg: false
+        }, {
+            lat: 43.04267266487463,
+            lng: 141.29117488861084,
+            address: '北海道札幌市西区山の手１条１３丁目５−１７',
+            range: 50,
+            uid: 9,
+            display: true,
+            type: "1",
+            delflg: false
+        }, {
+            lat: 43.05333566427254,
+            lng: 141.33718013763425,
+            address: '北海道札幌市北区北７条西６丁目２−８',
+            range: 200,
+            uid: 10,
+            display: true,
+            type: "2",
+            delflg: false
+        }, {
+            lat: 43.086441866511805,
+            lng: 141.3279104232788,
+            address: '北海道札幌市白石区本通（北）９丁目北４−８',
+            range: 250,
+            uid: 11,
+            display: true,
+            type: "3",
+            delflg: false
         }],
-        maxuid: 2
+        maxuid: 11
     },
     ready: function() {
         this.$broadcast('root:ready', this.locations);
@@ -90,11 +171,15 @@ var app = new Vue({
         },
 
         _changeRange: function(location) {
+            var me = this;
             this.$broadcast('change:range', location);
+            this.$broadcast('change:locations', me.locations);
         },
 
         _onChangeType: function(location) {
+            var me = this;
             this.$broadcast('change:type', location);
+            this.$broadcast('change:locations', me.locations);
         },
 
         _removeLocation: function() {
@@ -176,7 +261,7 @@ var app = new Vue({
             methods: {
 
                 _onClickMap: function(latlng) {
-
+console.log(latlng);
                     app.maxuid = app.maxuid + 1;
                     this._addCircle(latlng, app.maxuid);
                     this.$dispatch('add:location', latlng, app.maxuid);
@@ -241,12 +326,8 @@ var app = new Vue({
 
                     for (var i = 0, len = this.circles.length; i < len; i++) {
 
-                        console.log("this.circles[i].options.uid");
-                        console.log(this.circles[i].options.uid);
-
                         if (location.uid === this.circles[i].options.uid) {
 
-                            console.log("setRadius");
                             this.circles[i].setRadius(location.range);
 
                         }
@@ -406,7 +487,7 @@ var app = new Vue({
             methods: {
 
                 _onReady: function(locations) {
-                    this._dashboard('#dashboard', locations);
+                    this._dashboard('#dashboard1', locations);
                 },
 
                 _dashboard: function(id, locations) {
@@ -432,7 +513,7 @@ var app = new Vue({
                         .attr("transform", "translate("+pieDim.w/2+","+pieDim.h/2+")");
 
                     // create function to draw the arcs of the pie slices.
-                    me.arc = d3.svg.arc().outerRadius(pieDim.r - 10).innerRadius(0);
+                    me.arc = d3.svg.arc().outerRadius(pieDim.r - 10).innerRadius(pieDim.r - 50);
 
                     // create a function to compute the pie slice angles.
                     me.pie = d3.layout.pie().sort(null).value(function(d) {
@@ -447,27 +528,6 @@ var app = new Vue({
                         .style("fill", function(d) {
                             return me.segColor(d.data.type);
                         });
-                    //.on("mouseover",mouseover).on("mouseout",mouseout);
-                    //
-                    //// Utility function to be called on mouseover a pie slice.
-                    //function mouseover(d){
-                    //    // call the update function of histogram with new data.
-                    //    hG.update(fData.map(function(v){
-                    //        return [v.State,v.freq[d.data.type]];}),this.segColor(d.data.type));
-                    //}
-                    ////Utility function to be called on mouseout a pie slice.
-                    //function mouseout(d){
-                    //    // call the update function of histogram with all data.
-                    //    hG.update(fData.map(function(v){
-                    //        return [v.State,v.total];}), barColor);
-                    //}
-                    ////Animating the pie-slice requiring a custom function which specifies
-                    ////how the intermediate paths should be drawn.
-                    //function arcTween(a) {
-                    //    var i = d3.interpolate(this._current, a);
-                    //    this._current = i(0);
-                    //    return function(t) { return arc(i(t));    };
-                    //}
 
                 },
 
@@ -515,23 +575,26 @@ var app = new Vue({
 
             },
             template:
-            '<div id="dashboard"></div>'
+                '<div id="dashboard1"></div>'
         },
 
         graph2: {
             props: ['locations'],
-            pieChart: {},
-            pie: {},
-            arc: {},
+            barChart: {},
+            x: {},
+            y: {},
+            xAxis: {},
+            yAxis: {},
+            height: 0,
             events: {
                 'root:ready': '_onReady',
-                'add:location': '_updatePieChart',
-                'change:locations': '_updatePieChart'
+                'add:location': '_updateBarChart',
+                'change:locations': '_updateBarChart'
             },
             methods: {
 
                 _onReady: function(locations) {
-                    this._dashboard('#dashboard', locations);
+                    this._dashboard('#dashboard2', locations);
                 },
 
                 _dashboard: function(id, locations) {
@@ -539,85 +602,73 @@ var app = new Vue({
                     var me = this,
                         tr = me._createTotalRange(locations);
 
-                    me._pieChart(tr, id);
+                    me._barChart(tr, id);
 
                 },
 
-                _pieChart: function(pD, id) {
+                _barChart: function(pD, id) {
 
                     var me = this,
-                        pieDim = {
-                            w: 200,
-                            h: 200
-                        };
-                    pieDim.r = Math.min(pieDim.w, pieDim.h) / 2;
+                        margin = {top: 20, right: 20, bottom: 30, left: 40},
+                        width = 300 - margin.left - margin.right;
 
-                    me.pieChart = d3.select(id).append("svg")
-                        .attr("width", pieDim.w).attr("height", pieDim.h).append("g")
-                        .attr("transform", "translate("+pieDim.w/2+","+pieDim.h/2+")");
+                    me.height = 200 - margin.top - margin.bottom;
 
-                    // create function to draw the arcs of the pie slices.
-                    me.arc = d3.svg.arc().outerRadius(pieDim.r - 10).innerRadius(0);
+                    me.x = d3.scale.ordinal().rangeRoundBands([0, width], .4);
+                    me.y = d3.scale.linear().range([me.height, 0]);
 
-                    // create a function to compute the pie slice angles.
-                    me.pie = d3.layout.pie().sort(null).value(function(d) {
+                    me.xAxis = d3.svg.axis().scale(me.x).orient("bottom");
+                    me.yAxis = d3.svg.axis().scale(me.y).orient("left").ticks(5);
+
+                    me.barChart = d3.select(id).append("svg")
+                        .attr("width", width + margin.left + margin.right)
+                        .attr("height", me.height + margin.top + margin.bottom)
+                        .append("g")
+                        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+                    me.x.domain(pD.map(function(d) {
+                        return d.type;
+                    }));
+                    me.y.domain([0, d3.max(pD, function(d) {
                         return d.freq;
-                    });
+                    })]);
 
-                    // Draw the pie slices.
-                    me.pieChart.selectAll("path").data(me.pie(pD)).enter().append("path").attr("d", me.arc)
-                        .each(function(d) {
-                            this._current = d;
-                        })
-                        .style("fill", function(d) {
-                            return me.segColor(d.data.type);
-                        });
-                    //.on("mouseover",mouseover).on("mouseout",mouseout);
-                    //
-                    //// Utility function to be called on mouseover a pie slice.
-                    //function mouseover(d){
-                    //    // call the update function of histogram with new data.
-                    //    hG.update(fData.map(function(v){
-                    //        return [v.State,v.freq[d.data.type]];}),this.segColor(d.data.type));
-                    //}
-                    ////Utility function to be called on mouseout a pie slice.
-                    //function mouseout(d){
-                    //    // call the update function of histogram with all data.
-                    //    hG.update(fData.map(function(v){
-                    //        return [v.State,v.total];}), barColor);
-                    //}
-                    ////Animating the pie-slice requiring a custom function which specifies
-                    ////how the intermediate paths should be drawn.
-                    //function arcTween(a) {
-                    //    var i = d3.interpolate(this._current, a);
-                    //    this._current = i(0);
-                    //    return function(t) { return arc(i(t));    };
-                    //}
+                    me.barChart.append("g")
+                        .attr("class", "x axis")
+                        .attr("transform", "translate(0," + me.height + ")")
+                        .call(me.xAxis);
+
+                    me.barChart.append("g")
+                        .attr("class", "y axis")
+                        .call(me.yAxis)
+                        .append("text")
+                        .attr("transform", "rotate(-90)")
+                        .attr("y", 6)
+                        .attr("dy", ".71em")
+                        .style("text-anchor", "end");
+
+                    me.barChart.selectAll(".bar")
+                        .data(pD)
+                        .enter().append("rect")
+                        .attr("class", function(d) { return "bar bar" + d.type; })
+                        .attr("x", function(d) { return me.x(d.type); })
+                        .attr("width", me.x.rangeBand())
+                        .attr("y", function(d) { return me.y(d.freq); })
+                        .attr("height", function(d) { return me.height - me.y(d.freq); });
 
                 },
 
-                segColor: function(c) {
-
-                    return {
-                        1:"#80d8ff", 2:"#ff8a80",3:"#b388ff"
-                    }[c];
-
-                },
-
-                _updatePieChart: function(locations) {
+                _updateBarChart: function(locations) {
 
                     var me = this,
                         tr = me._createTotalRange(locations);
 
-                    me.pieChart.selectAll("path").data(me.pie(tr)).transition().duration(500)
-                        .attrTween("d", function(a){
-                            var i = d3.interpolate(this._current, a);
-                            this._current = i(0);
-                            return function(t) {
-                                return me.arc(i(t));
-                            };
-                        });
-
+                    me.barChart.selectAll(".bar")
+                        .data(tr)
+                        .transition()
+                        .duration(1000)
+                        .attr("y", function(d) { return me.y(d.freq); })
+                        .attr("height", function(d) { return me.height - me.y(d.freq); });
 
                 },
 
@@ -641,6 +692,145 @@ var app = new Vue({
             },
             template:
                 '<div id="dashboard2"></div>'
+        },
+
+        graph3: {
+            props: ['locations'],
+            lineChart: {},
+            //line: {},
+            //xAxis: {},
+            //yAxis: {},
+            height: 0,
+            events: {
+                'root:ready': '_onReady',
+                'add:location': '_updateLineChart',
+                'change:locations': '_updateLineChart'
+            },
+            methods: {
+
+                _onReady: function(locations) {
+                    this._dashboard('#dashboard3', locations);
+                },
+
+                _dashboard: function(id, locations) {
+
+                    var me = this;
+                    me._lineChart(locations, id);
+
+                },
+
+                _lineChart: function(locations, id) {
+
+                    var me = this,
+                        margin = {top: 20, right: 20, bottom: 30, left: 50},
+                        width = 400 - margin.left - margin.right;
+
+                    me.height = 250 - margin.top - margin.bottom;
+
+                    me.lineChart = d3.select(id).append("svg")
+                        .attr("width", width)
+                        .attr("height", me.height);
+
+                    var xScale = d3.scale.linear()
+                        .domain([1, 15])
+                        .range([0, width]);
+
+                    var yScale = d3.scale.linear()
+                        .domain([50, 300])
+                        .range([me.height, 0]);
+
+                    var colorCategoryScale = d3.scale.category10();
+
+                    var xAxis = d3.svg.axis()
+                        .scale(xScale)
+                        .orient("bottom")
+                        .tickSize(3, -me.height)
+                        .tickFormat(function(d){ return d; });
+
+                    var yAxis = d3.svg.axis()
+                        .ticks(5)
+                        .scale(yScale)
+                        .orient("left")
+                        .tickSize(3, -width);
+
+                    var line = d3.svg.line()
+                        .x(function(d) { return xScale(d.uid); })
+                        .y(function(d) { return yScale(d.range); })
+                        .interpolate("cardinal");
+
+                    me.lineChart.selectAll("circle")
+                        .data(locations)
+                        .enter()
+                        .append("circle")
+                        .attr("r",5)
+                        .attr("fill", function(d){ return me.segColor(d.type); })
+                        .attr("cx", function(d){ return xScale(d.uid); })
+                        .attr("cy", function(d){ return yScale(d.range); });
+
+                    me.lineChart.append("path")
+                        .datum(locations)
+                        .attr("class", "line")
+                        .attr("d", line);
+
+                    me.lineChart.append("g")
+                        .attr("class", "y axis")
+                        .call(yAxis)
+                        .append("text")
+                        .attr("y", -10)
+                        .attr("x",10)
+                        .style("text-anchor", "end");
+
+                    me.lineChart.append("g")
+                        .attr("class", "x axis")
+                        .attr("transform", "translate(0," + me.height + ")")
+                        .call(xAxis);
+
+
+                },
+
+                segColor: function(c) {
+
+                    return {
+                        1:"#80d8ff", 2:"#ff8a80",3:"#b388ff"
+                    }[c];
+
+                },
+
+                _updateLineChart: function(locations) {
+
+                    var me = this;
+
+                    me.lineChart.append("g")
+                        .attr("class", "x axis")
+                        .attr("transform", "translate(0," + me.height + ")")
+                        .call(me.xAxis);
+
+                    me.lineChart.append("g")
+                        .attr("class", "y axis")
+                        .call(me.yAxis)
+                        .append("text")
+                        .attr("transform", "rotate(-90)")
+                        .attr("y", 6)
+                        .attr("dy", ".71em")
+                        .style("text-anchor", "end");
+
+                    me.lineChart.append("path")
+                        .datum(locations)
+                        .attr("class", "line")
+                        .attr("d", me.line);
+
+
+                    me.barChart.selectAll("path")
+                        .data(locations)
+                        .transition()
+                        .duration(1000)
+
+                }
+
+            },
+            template:
+                '<div id="dashboard3"></div>'
         }
+
     }
 });
